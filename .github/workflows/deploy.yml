@@ -1,0 +1,29 @@
+name: Deploy Static Site to S3
+
+# When to run: every time code is pushed to main branch
+on:
+  push:
+    branches:
+      - main
+
+# What to do
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Use Ubuntu server
+    
+    steps:
+    # Step 1: Download our code
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    # Step 2: Upload to S3
+    - name: Deploy to S3
+      uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --acl public-read --delete
+      env:
+        AWS_S3_BUCKET: devops-static-site-cicd-sirajdilshan  # Replace with your bucket name!
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ap-south-1  # Change if you used different region
+        SOURCE_DIR: .  # Upload everything from project root
